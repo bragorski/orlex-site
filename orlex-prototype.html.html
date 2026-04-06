@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orlex.ai — Policy Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0e1117;
+    --ink-2: #3a3f4a;
+    --ink-3: #7a8190;
+    --surface: #f8f7f4;
+    --surface-2: #f0ede8;
+    --surface-3: #e6e2db;
+    --white: #ffffff;
+    --accent: #1a3cff;
+    --accent-light: #e8edff;
+    --accent-mid: #4d6aff;
+    --green: #0a7c4e;
+    --green-light: #e6f4ee;
+    --amber: #c47c00;
+    --amber-light: #fdf3dc;
+    --red: #c0392b;
+    --red-light: #fdecea;
+    --border: rgba(14,17,23,0.10);
+    --border-strong: rgba(14,17,23,0.18);
+    --radius: 10px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 3px rgba(14,17,23,0.06), 0 4px 16px rgba(14,17,23,0.04);
+    --shadow-md: 0 2px 8px rgba(14,17,23,0.08), 0 8px 32px rgba(14,17,23,0.06);
+  }
+
+  html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); font-size: 14px; line-height: 1.5; }
+
+  /* Layout */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px; min-width: 220px; background: var(--white);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column;
+    padding: 0; overflow: hidden;
+  }
+  .logo {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark {
+    width: 28px; height: 28px; background: var(--accent);
+    border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 16px; height: 16px; }
+  .logo-name { font-family: 'DM Serif Display', serif; font-size: 18px; letter-spacing: -0.3px; color: var(--ink); }
+  .logo-name span { color: var(--accent); }
+
+  .sidebar-section { padding: 16px 12px 8px; }
+  .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); padding: 0 8px 8px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    border-radius: 8px; cursor: pointer; color: var(--ink-2); font-size: 13.5px;
+    font-weight: 400; transition: all 0.15s; user-select: none; position: relative;
+  }
+  .nav-item:hover { background: var(--surface); color: var(--ink); }
+  .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+  .nav-item.active svg { opacity: 1; }
+  .nav-badge {
+    margin-left: auto; background: var(--accent); color: white;
+    font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 20px;
+    line-height: 1.6;
+  }
+  .nav-badge.amber { background: var(--amber); }
+
+  .sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-pill {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    border-radius: 8px; cursor: pointer;
+  }
+  .user-pill:hover { background: var(--surface); }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #1a3cff 0%, #6d4aff 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: white; flex-shrink: 0;
+  }
+  .user-info .name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .user-info .role { font-size: 11px; color: var(--ink-3); }
+
+  /* Main */
+  .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+  /* Topbar */
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px; display: flex; align-items: center;
+    justify-content: space-between; flex-shrink: 0; position: sticky; top: 0; z-index: 10;
+  }
+  .page-title { font-family: 'DM Serif Display', serif; font-size: 20px; letter-spacing: -0.3px; }
+  .topbar-actions { display: flex; align-items: center; gap: 12px; }
+  .btn {
+    padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border-strong); background: var(--white);
+    color: var(--ink-2); transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn:hover { background: var(--surface); }
+  .btn-primary {
+    background: var(--accent); color: white; border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #1230d6; border-color: #1230d6; }
+
+  /* Content */
+  .content { padding: 24px 28px; flex: 1; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 22px; background: var(--surface-2); padding: 4px; border-radius: 10px; width: fit-content; }
+  .tab {
+    padding: 6px 16px; border-radius: 7px; cursor: pointer; font-size: 13px;
+    font-weight: 400; color: var(--ink-3); transition: all 0.15s; user-select: none;
+  }
+  .tab.active { background: var(--white); color: var(--ink); font-weight: 500; box-shadow: 0 1px 3px rgba(14,17,23,0.08); }
+  .tab:hover:not(.active) { color: var(--ink-2); }
+
+  /* Stats row */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .stat-label { font-size: 11.5px; color: var(--ink-3); font-weight: 500; margin-bottom: 6px; letter-spacing: 0.01em; }
+  .stat-value { font-size: 26px; font-family: 'DM Serif Display', serif; color: var(--ink); letter-spacing: -0.5px; }
+  .stat-sub { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+  .stat-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+  /* Two col layout */
+  .two-col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+  /* Panel */
+  .panel {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .panel-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-title { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .panel-action { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; }
+  .panel-action:hover { text-decoration: underline; }
+
+  /* Policy list */
+  .policy-row {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 110px 90px 80px 56px;
+    gap: 12px; align-items: center; cursor: pointer; transition: background 0.12s;
+  }
+  .policy-row:last-child { border-bottom: none; }
+  .policy-row:hover { background: var(--surface); }
+  .policy-row.selected { background: var(--accent-light); }
+  .col-header {
+    padding: 8px 20px; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 110px 90px 80px 56px;
+    gap: 12px; background: var(--surface);
+  }
+  .col-h { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); }
+
+  .policy-name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+  .policy-sector { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 500; white-space: nowrap;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-blue { background: var(--accent-light); color: var(--accent); }
+  .badge-gray { background: var(--surface-2); color: var(--ink-2); }
+
+  /* Relevance dot */
+  .relevance { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
+
+  /* Alert toggle */
+  .toggle { position: relative; width: 34px; height: 19px; cursor: pointer; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--surface-3); border-radius: 20px; transition: background 0.2s;
+  }
+  .toggle input:checked + .toggle-track { background: var(--accent); }
+  .toggle-thumb {
+    position: absolute; width: 13px; height: 13px; border-radius: 50%;
+    background: white; top: 3px; left: 3px; transition: transform 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(15px); }
+
+  /* Detail panel */
+  .detail-panel { display: flex; flex-direction: column; }
+  .detail-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .detail-tab {
+    padding: 12px 16px; font-size: 12.5px; cursor: pointer; color: var(--ink-3);
+    border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s;
+    font-weight: 500;
+  }
+  .detail-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .detail-body { padding: 18px 20px; font-size: 13px; color: var(--ink-2); line-height: 1.65; flex: 1; }
+  .detail-section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; margin-top: 14px; }
+  .detail-section-title:first-child { margin-top: 0; }
+  .impact-item {
+    background: var(--surface); border-radius: 8px; padding: 10px 12px;
+    margin-bottom: 8px; font-size: 12.5px;
+  }
+  .impact-label { font-weight: 600; color: var(--ink); margin-bottom: 2px; font-size: 12px; }
+  .impact-text { color: var(--ink-2); }
+  .action-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 10px; background: var(--accent); color: white; border-radius: 8px;
+    font-size: 13px; font-weight: 500; cursor: pointer; margin: 16px 20px 20px;
+    transition: background 0.15s; border: none; font-family: 'DM Sans', sans-serif;
+  }
+  .action-btn:hover { background: #1230d6; }
+
+  /* Alerts panel */
+  .alert-item {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.12s;
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .alert-item:hover { background: var(--surface); }
+  .alert-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+  .alert-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .alert-date { font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+  .alert-meta { font-size: 11.5px; color: var(--ink-3); }
+  .new-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 4px; }
+
+  /* Consultation mini card */
+  .consult-card {
+    margin: 12px 20px; background: var(--surface); border-radius: 10px;
+    padding: 14px; border: 1px solid var(--border);
+  }
+  .consult-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .consult-deadline { font-size: 11.5px; color: var(--amber); font-weight: 500; }
+  .consult-desc { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+  .progress-bar { height: 4px; background: var(--surface-3); border-radius: 2px; margin: 10px 0 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+
+  /* Empty/selected state */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; color: var(--ink-3); gap: 8px; }
+  .empty-icon { font-size: 28px; opacity: 0.4; }
+
+  /* Pagination / footer */
+  .panel-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .showing-text { font-size: 12px; color: var(--ink-3); }
+
+  /* Animate in */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .panel { animation: fadeUp 0.25s ease both; }
+  .stats-row .stat-card:nth-child(1) { animation-delay: 0.04s; }
+  .stats-row .stat-card:nth-child(2) { animation-delay: 0.08s; }
+  .stats-row .stat-card:nth-child(3) { animation-delay: 0.12s; }
+  .stats-row .stat-card:nth-child(4) { animation-delay: 0.16s; }
+
+  /* Right sidebar notice */
+  .notice {
+    margin: 12px 20px; background: var(--accent-light); border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; color: var(--accent);
+    border: 1px solid rgba(26,60,255,0.15);
+  }
+
+  scrollbar-width: thin;
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16" fill="none">
+          <path d="M3 8L7 4L11 8L7 12L3 8Z" fill="white" opacity="0.9"/>
+          <path d="M7 4L13 8L7 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>
+        </svg>
+      </div>
+      <span class="logo-name">orlex<span>.ai</span></span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <div class="nav-item active" onclick="setTab('dashboard')">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h5v6H2V2zm7 0h5v3H9V2zM2 10h5v4H2v-4zm7-3h5v7H9V7z" opacity="0.8"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" onclick="setTab('alerts')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a4 4 0 014 4c0 3 1 4 1 4H3s1-1 1-4a4 4 0 014-4zM6.5 13a1.5 1.5 0 003 0"/></svg>
+        Alerts
+        <span class="nav-badge">3</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Policy Tools</div>
+      <div class="nav-item" onclick="setTab('advocacy')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M5 5.5h6M5 10.5h4"/></svg>
+        Advocacy
+        <span class="nav-badge amber">2</span>
+      </div>
+      <div class="nav-item" onclick="setTab('compliance')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5 8 2z"/></svg>
+        Compliance
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2.5 14c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4"/></svg>
+        Profile
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4"/></svg>
+        Settings
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar">AB</div>
+        <div class="user-info">
+          <div class="name">Ana B.</div>
+          <div class="role">Policy Manager</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="main-area">
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard">
+      <div class="topbar">
+        <div class="page-title">Dashboard</div>
+        <div class="topbar-actions">
+          <select style="padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--white); font-family: 'DM Sans',sans-serif; font-size: 13px; color: var(--ink-2); cursor: pointer;">
+            <option>All sectors</option>
+            <option>ICT / E-commerce</option>
+            <option>Manufacturing</option>
+            <option>Finance</option>
+          </select>
+          <button class="btn btn-primary" onclick="showToast('Report generated!')">Export Report</button>
+        </div>
+      </div>
+      <div class="content">
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Tracked Policies</div>
+            <div class="stat-value">24</div>
+            <div class="stat-sub"><span class="stat-dot" style="background:var(--accent)"></span>6 updated this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Alerts</div>
+            <div class="stat-value">3</div>
+            <div class="stat-sub"><span class="stat-dot" style="background:var(--amber)"></span>1 high relevance</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Open Consultations</div>
+            <div class="stat-value">2</div>
+            <div class="stat-sub"><span class="stat-dot" style="background:var(--red)"></span>Deadline in 19 days</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Compliance Actions</div>
+            <div class="stat-value">1</div>
+            <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>Due Jun 16, 2026</div>
+          </div>
+        </div>
+
+        <!-- Main grid -->
+        <div class="two-col">
+          <!-- Policy tracker -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Policy Tracker</div>
+              <span class="panel-action">Filter ↓</span>
+            </div>
+            <div class="col-header">
+              <span class="col-h">Policy</span>
+              <span class="col-h">Status</span>
+              <span class="col-h">Relevance</span>
+              <span class="col-h">Panel</span>
+              <span class="col-h">Alerts</span>
+            </div>
+
+            <div class="policy-row selected" onclick="selectPolicy(0)">
+              <div>
+                <div class="policy-name">Law on Profit Tax Amendments</div>
+                <div class="policy-sector">Finance · Tax</div>
+              </div>
+              <span class="badge badge-blue">Public Consult.</span>
+              <div class="relevance"><span class="stat-dot" style="background:#1a3cff"></span>High</div>
+              <span class="badge badge-green">Available</span>
+              <label class="toggle"><input type="checkbox" checked onchange="void(0)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+
+            <div class="policy-row" onclick="selectPolicy(1)">
+              <div>
+                <div class="policy-name">Law on Digital Services</div>
+                <div class="policy-sector">ICT · E-commerce</div>
+              </div>
+              <span class="badge badge-blue">Public Consult.</span>
+              <div class="relevance"><span class="stat-dot" style="background:#1a3cff"></span>High</div>
+              <span class="badge badge-green">Available</span>
+              <label class="toggle"><input type="checkbox" checked onchange="void(0)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+
+            <div class="policy-row" onclick="selectPolicy(2)">
+              <div>
+                <div class="policy-name">Law on Employment</div>
+                <div class="policy-sector">Labour · All sectors</div>
+              </div>
+              <span class="badge badge-amber">Parliamentary</span>
+              <div class="relevance"><span class="stat-dot" style="background:var(--amber)"></span>Moderate</div>
+              <span class="badge badge-green">Available</span>
+              <label class="toggle"><input type="checkbox" checked onchange="void(0)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+
+            <div class="policy-row" onclick="selectPolicy(3)">
+              <div>
+                <div class="policy-name">Law on Data Protection</div>
+                <div class="policy-sector">ICT · All sectors</div>
+              </div>
+              <span class="badge badge-gray">Adopted</span>
+              <div class="relevance"><span class="stat-dot" style="background:#7a8190"></span>Low</div>
+              <span class="badge badge-gray">—</span>
+              <label class="toggle"><input type="checkbox" onchange="void(0)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+
+            <div class="panel-footer">
+              <span class="showing-text">Showing 4 of 24 policies</span>
+              <span class="panel-action">View all →</span>
+            </div>
+          </div>
+
+          <!-- Right: detail + alerts -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Policy detail -->
+            <div class="panel detail-panel" id="detail-panel" style="flex: 1;">
+              <div class="panel-header">
+                <div class="panel-title" id="detail-title">Law on Profit Tax Amendments</div>
+              </div>
+              <div class="detail-tabs">
+                <div class="detail-tab active" onclick="setDetailTab('overview', this)">Overview</div>
+                <div class="detail-tab" onclick="setDetailTab('summary', this)">Summary</div>
+                <div class="detail-tab" onclick="setDetailTab('impact', this)">Impact</div>
+              </div>
+              <div class="detail-body" id="detail-body">
+                <div id="tab-overview">
+                  <div class="detail-section-title">Key Information</div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+                    <div style="font-size: 12px; color: var(--ink-3);">Status</div><div style="font-size: 12px; font-weight: 500; color: var(--ink);">Public Consultation</div>
+                    <div style="font-size: 12px; color: var(--ink-3);">Key Date</div><div style="font-size: 12px; font-weight: 500; color: var(--amber);">May 9, 2025</div>
+                    <div style="font-size: 12px; color: var(--ink-3);">Relevance</div><div style="font-size: 12px; font-weight: 500; color: var(--accent);">High</div>
+                    <div style="font-size: 12px; color: var(--ink-3);">Sectors</div><div style="font-size: 12px; color: var(--ink);">Finance, All</div>
+                  </div>
+                  <div class="detail-section-title">Description</div>
+                  <p style="font-size: 12.5px; color: var(--ink-2); line-height: 1.6;">Amendments focused on transposition of the EU Directive and improving tax transparency for companies operating in North Macedonia.</p>
+                </div>
+                <div id="tab-summary" style="display:none">
+                  <p style="font-size: 12.5px; line-height: 1.65;">The proposed amendments to the Law on Profit Tax primarily focus on the transposition of the EU Directive. In addition, the draft law introduces further changes aimed at improving tax transparency across corporate entities.</p>
+                  <div class="notice" style="margin: 12px 0 0;">
+                    <strong>AI Summary</strong> · Generated from official consultation draft · Verified by Orlex team
+                  </div>
+                </div>
+                <div id="tab-impact" style="display:none">
+                  <div class="detail-section-title">Business Impact</div>
+                  <div class="impact-item"><div class="impact-label">Reporting requirements</div><div class="impact-text">New quarterly disclosure obligations for companies with revenue over 2M EUR.</div></div>
+                  <div class="impact-item"><div class="impact-label">Tax rate adjustment</div><div class="impact-text">Potential 2% increase for non-compliant entities after Jan 2026.</div></div>
+                  <div class="impact-item"><div class="impact-label">Timeline</div><div class="impact-text">Consultation closes May 9 — position papers due before this date.</div></div>
+                </div>
+              </div>
+              <button class="action-btn" onclick="showToast('Opening Advocacy module...')">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M4 7h6M7 4v6"/></svg>
+                Draft Position Paper
+              </button>
+            </div>
+
+            <!-- Open Consultations -->
+            <div class="panel" style="flex-shrink: 0;">
+              <div class="panel-header">
+                <div class="panel-title">Open Consultations</div>
+                <span class="panel-action">View all →</span>
+              </div>
+              <div class="consult-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div class="consult-title">Law on Profit Tax Amendments</div>
+                  <span class="badge badge-amber" style="font-size:10.5px; white-space:nowrap">19 days left</span>
+                </div>
+                <div class="consult-desc">Position paper under review · 3 co-signers</div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 65%"></div></div>
+                <div style="font-size: 11px; color: var(--ink-3); display: flex; justify-content: space-between;"><span>Progress: 65%</span><span>Due May 9</span></div>
+              </div>
+              <div class="consult-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div class="consult-title">Law on Digital Services</div>
+                  <span class="badge badge-blue" style="font-size:10.5px">Draft stage</span>
+                </div>
+                <div class="consult-desc">AI paper generated · Pending review</div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 30%"></div></div>
+                <div style="font-size: 11px; color: var(--ink-3); display: flex; justify-content: space-between;"><span>Progress: 30%</span><span>Due Apr 25</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTS VIEW -->
+    <div id="view-alerts" style="display:none;">
+      <div class="topbar">
+        <div class="page-title">Alerts</div>
+        <div class="topbar-actions">
+          <button class="btn" onclick="showToast('All alerts marked as read')">Mark all read</button>
+          <button class="btn btn-primary" onclick="showToast('Notification settings saved')">Manage alerts</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="panel" style="max-width: 680px;">
+          <div class="panel-header">
+            <div class="panel-title">Recent Alerts</div>
+            <span class="badge badge-blue">3 new</span>
+          </div>
+          <div class="alert-item" onclick="showToast('Opening policy details...')">
+            <div class="alert-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <div class="new-dot"></div>
+                <div>
+                  <div class="alert-name">Law on Digital Services — Open for Consultation</div>
+                  <div class="alert-meta">ICT · E-commerce · <strong style="color:var(--accent)">High relevance</strong> · Key date: April 25, 2025</div>
+                </div>
+              </div>
+              <span class="alert-date">1 min ago</span>
+            </div>
+          </div>
+          <div class="alert-item" onclick="showToast('Opening policy details...')">
+            <div class="alert-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <div class="new-dot"></div>
+                <div>
+                  <div class="alert-name">Law on Employment — Updated Draft</div>
+                  <div class="alert-meta">All sectors · <strong style="color:var(--amber)">Moderate relevance</strong> · Parliamentary procedure</div>
+                </div>
+              </div>
+              <span class="alert-date">2h ago</span>
+            </div>
+          </div>
+          <div class="alert-item" onclick="showToast('Opening policy details...')">
+            <div class="alert-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <div class="new-dot"></div>
+                <div>
+                  <div class="alert-name">Law on Profit Tax — Consultation Deadline Approaching</div>
+                  <div class="alert-meta">Finance · <strong style="color:var(--red)">19 days remaining</strong> · Action required</div>
+                </div>
+              </div>
+              <span class="alert-date">Yesterday</span>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <div style="width:7px; height:7px; border-radius:50%; background:var(--surface-3); flex-shrink:0; margin-top:4px;"></div>
+                <div>
+                  <div class="alert-name">Law on Data Protection — Adopted</div>
+                  <div class="alert-meta">All sectors · <span style="color:var(--ink-3)">Low relevance</span> · Now in Compliance module</div>
+                </div>
+              </div>
+              <span class="alert-date">Apr 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVOCACY VIEW -->
+    <div id="view-advocacy" style="display:none;">
+      <div class="topbar">
+        <div class="page-title">Advocacy</div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="showToast('AI is generating your position paper...')">+ New Position Paper</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Law on Digital Services</div>
+              <span class="badge badge-blue">Draft stage</span>
+            </div>
+            <div style="padding: 18px 20px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;">
+                <div style="background: var(--surface); border-radius: 10px; padding: 14px; cursor:pointer;" onclick="showToast('Opening stakeholder map...')">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 4px;">Stakeholder Map</div>
+                  <div style="font-size: 12px; color: var(--ink-3);">7 stakeholders identified</div>
+                </div>
+                <div style="background: var(--red-light); border-radius: 10px; padding: 14px; cursor:pointer;" onclick="showToast('Opening crisis response...')">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--red); margin-bottom: 4px;">Real-time Response</div>
+                  <div style="font-size: 12px; color: var(--ink-3);">Crisis alerts: 0 active</div>
+                </div>
+              </div>
+              <div style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+                <div style="background: var(--accent); padding: 12px 16px; color: white; font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+                  Position Paper <span style="font-size: 11px; opacity: 0.8; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">AI Generated · Verified ✓</span>
+                </div>
+                <div style="display: flex; border-bottom: 1px solid var(--border);">
+                  <div style="padding: 10px 16px; font-size: 12.5px; color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: 500; cursor:pointer;">Document Review</div>
+                  <div style="padding: 10px 16px; font-size: 12.5px; color: var(--ink-3); cursor:pointer;" onclick="showToast('Opening comments panel...')">Comments (4)</div>
+                </div>
+                <div style="padding: 16px; font-size: 13px; color: var(--ink-2); line-height: 1.65;">
+                  <div style="font-weight: 600; color: var(--ink); margin-bottom: 8px;">Introduction</div>
+                  <p style="margin-bottom: 12px;">The Business Association of North Macedonia welcomes the opportunity to provide input on the Law on Digital Services. We represent over 340 member companies across the ICT and e-commerce sectors...</p>
+                  <div style="font-weight: 600; color: var(--ink); margin-bottom: 8px;">Recommendations</div>
+                  <p style="color: var(--ink-3); font-style: italic; font-size: 12.5px;">AI is drafting recommendations based on your industry profile and past position papers...</p>
+                  <div style="height: 6px; background: var(--surface-3); border-radius: 3px; margin-top: 8px; overflow:hidden;"><div style="width: 60%; height: 100%; background: var(--accent); border-radius: 3px; animation: prog 2s ease-in-out infinite alternate;"></div></div>
+                  <style>@keyframes prog { from { width: 55%; } to { width: 70%; } }</style>
+                </div>
+              </div>
+            </div>
+            <div style="padding: 0 20px 20px; display: flex; gap: 10px;">
+              <button class="btn" style="flex:1" onclick="showToast('Collaboration link copied!')">Share with team</button>
+              <button class="btn btn-primary" style="flex:1" onclick="showToast('Position paper submitted!')">Co-sign & Submit</button>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Discussion Panel</div></div>
+              <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                  <div class="avatar" style="width:28px;height:28px;font-size:10px;flex-shrink:0;">MK</div>
+                  <div style="background: var(--surface); border-radius: 8px; padding: 9px 12px; font-size: 12.5px; color: var(--ink-2); flex: 1;">I agree with the points raised in the position paper regarding compliance timelines.</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-start; flex-direction: row-reverse;">
+                  <div class="avatar" style="width:28px;height:28px;font-size:10px;flex-shrink:0;">AB</div>
+                  <div style="background: var(--accent-light); border-radius: 8px; padding: 9px 12px; font-size: 12.5px; color: var(--ink); flex: 1;">I also believe this change will significantly ease the process for SMEs.</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                  <div class="avatar" style="width:28px;height:28px;font-size:10px;flex-shrink:0;">TS</div>
+                  <div style="background: var(--surface); border-radius: 8px; padding: 9px 12px; font-size: 12.5px; color: var(--ink-2); flex: 1;">Can we request an extension on the consultation deadline?</div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                  <input type="text" placeholder="Add a comment..." style="flex:1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-strong); font-size: 12.5px; font-family: 'DM Sans',sans-serif;">
+                  <button class="btn btn-primary" onclick="showToast('Comment added!')" style="padding: 8px 14px; font-size: 12.5px;">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLIANCE VIEW -->
+    <div id="view-compliance" style="display:none;">
+      <div class="topbar">
+        <div class="page-title">Compliance</div>
+        <div class="topbar-actions">
+          <button class="btn" onclick="showToast('Exporting compliance report...')">Export</button>
+          <button class="btn btn-primary" onclick="showToast('Expert verification requested!')">Request Expert</button>
+        </div>
+      </div>
+      <div class="content">
+        <div style="max-width: 720px;">
+          <div class="panel" style="margin-bottom: 16px;">
+            <div class="panel-header">
+              <div class="panel-title">Compliance Base</div>
+            </div>
+            <div style="padding: 14px 20px;">
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="compliance-search" placeholder="Search laws, regulations, requirements..." style="flex:1; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border-strong); font-size: 13px; font-family: 'DM Sans',sans-serif;" oninput="searchCompliance(this.value)">
+                <button class="btn btn-primary" onclick="searchCompliance(document.getElementById('compliance-search').value)">Search</button>
+              </div>
+            </div>
+
+            <!-- Law on Data Protection -->
+            <div style="border-top: 1px solid var(--border); padding: 16px 20px;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; cursor:pointer;">Law on Data Protection</div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;">
+                <div style="border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor:pointer;" onclick="showToast('Starting applicability assessment...')">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 4px;">Interactive Decision Tree</div>
+                  <div style="font-size: 11.5px; color: var(--ink-3); margin-bottom: 10px;">Find out whether this law affects you</div>
+                  <div style="font-size: 11.5px; color: var(--accent); font-weight: 500;">Start Assessment →</div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor:pointer;" onclick="showToast('Loading AI checklist...')">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 4px;">AI-Generated Checklist</div>
+                  <div style="font-size: 11.5px; color: var(--ink-3); margin-bottom: 10px;">Get an instant checklist for your business</div>
+                  <div style="font-size: 11.5px; color: var(--accent); font-weight: 500;">View Checklist →</div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 8px;">Reminders</div>
+                  <div style="font-size: 11.5px; color: var(--ink-2); display: flex; gap: 6px; align-items: flex-start; margin-bottom: 5px;"><span style="color:var(--amber)">□</span> Submit the form by Jun 16, 2026</div>
+                  <div style="font-size: 11.5px; color: var(--ink-2); display: flex; gap: 6px; align-items: flex-start;"><span style="color:var(--amber)">□</span> Implement new rules by Dec 31, 2026</div>
+                </div>
+              </div>
+              <button style="width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans',sans-serif;" onclick="showToast('Connecting you with a legal expert...')">Request Expert Verification</button>
+            </div>
+
+            <!-- Other laws collapsed -->
+            <div style="border-top: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor:pointer;" onclick="showToast('Opening Law on Digital Services compliance...')">
+              <div style="font-size: 13.5px; font-weight: 500; color: var(--accent);">Law on Digital Services</div>
+              <span style="font-size: 12px; color: var(--ink-3);">See More →</span>
+            </div>
+            <div style="border-top: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor:pointer;" onclick="showToast('Opening Law on Profit Tax compliance...')">
+              <div style="font-size: 13.5px; font-weight: 500; color: var(--accent);">Law on Profit Tax</div>
+              <span style="font-size: 12px; color: var(--ink-3);">See More →</span>
+            </div>
+          </div>
+
+          <div class="notice" style="margin: 0; font-size: 12.5px;">
+            <strong>Mirrors how businesses think:</strong> Does this apply to me? → What do I do? → When is it due?
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:white; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; opacity: 0; transition: all 0.25s; pointer-events:none; white-space:nowrap; z-index:999;"></div>
+
+<script>
+const policies = [
+  { title: 'Law on Profit Tax Amendments', sector: 'Finance · Tax', status: 'Public Consultation', relevance: 'High', date: 'May 9, 2025' },
+  { title: 'Law on Digital Services', sector: 'ICT · E-commerce', status: 'Public Consultation', relevance: 'High', date: 'Apr 25, 2025' },
+  { title: 'Law on Employment', sector: 'Labour · All sectors', status: 'Parliamentary', relevance: 'Moderate', date: 'Apr 25, 2025' },
+  { title: 'Law on Data Protection', sector: 'ICT · All sectors', status: 'Adopted', relevance: 'Low', date: 'Adopted' },
+];
+
+function selectPolicy(i) {
+  document.querySelectorAll('.policy-row').forEach((r, j) => r.classList.toggle('selected', i === j));
+  const p = policies[i];
+  document.getElementById('detail-title').textContent = p.title;
+}
+
+function setDetailTab(tab, el) {
+  document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['overview','summary','impact'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+function setTab(name) {
+  ['dashboard','alerts','advocacy','compliance'].forEach(v => {
+    document.getElementById('view-'+v).style.display = v === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(10px)';
+  }, 2200);
+}
+
+function searchCompliance(val) {
+  if (val.length > 0) showToast('Searching: "' + val + '"...');
+}
+</script>
+</body>
+</html>
