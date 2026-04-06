@@ -75,7 +75,6 @@ nav.scrolled { box-shadow: 0 2px 20px rgba(102,17,215,0.08); }
   background: var(--accent-light); border: 1px solid rgba(102,17,215,0.2);
   color: var(--accent); font-size: 12.5px; font-weight: 600; letter-spacing: 0.03em;
   padding: 5px 14px; border-radius: 20px; margin-bottom: 30px;
-  animation: fadeUp 0.6s ease both;
 }
 .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
@@ -85,17 +84,14 @@ h1 {
   font-size: clamp(40px, 6vw, 70px);
   line-height: 1.1; letter-spacing: -2px; color: var(--ink);
   margin-bottom: 22px;
-  animation: fadeUp 0.6s 0.1s ease both;
 }
 h1 em { color: var(--accent); font-style: italic; }
 .hero-sub {
   font-size: clamp(16px, 1.8vw, 19px); color: var(--ink-2); font-weight: 300;
   max-width: 500px; margin: 0 auto 38px; line-height: 1.65;
-  animation: fadeUp 0.6s 0.2s ease both;
 }
 .hero-actions {
   display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
-  animation: fadeUp 0.6s 0.28s ease both;
 }
 .btn-hero {
   padding: 13px 28px; border-radius: 11px; font-size: 15px; font-weight: 500;
@@ -109,12 +105,11 @@ h1 em { color: var(--accent); font-style: italic; }
 .hero-trust {
   margin-top: 44px; font-size: 12.5px; color: var(--ink-3);
   display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;
-  animation: fadeUp 0.6s 0.36s ease both;
 }
 .trust-divider { width: 1px; height: 12px; background: var(--border-strong); }
 
 /* ---- PREVIEW ---- */
-.preview-wrap { position: relative; max-width: 960px; margin: 60px auto 0; animation: fadeUp 0.8s 0.45s ease both; }
+.preview-wrap { position: relative; max-width: 960px; margin: 60px auto 0; }
 .preview-frame {
   background: var(--white); border: 1px solid var(--border-strong); border-radius: var(--radius-xl); overflow: hidden;
   box-shadow: 0 8px 60px rgba(102,17,215,0.1), 0 2px 8px rgba(14,17,23,0.05);
@@ -338,8 +333,7 @@ footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.06); p
 
 /* ---- ANIMATIONS ---- */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal { opacity: 1; transform: none; transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal-delay-1 { transition-delay: 0.1s; }
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
