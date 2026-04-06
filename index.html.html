@@ -351,17 +351,42 @@ footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.06); p
 @media (max-width: 900px) {
   .steps { grid-template-columns: 1fr; gap: 24px; }
   .step-connector { display: none; }
-  .pricing-grid { grid-template-columns: 1fr; max-width: 440px; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 100%; }
   nav { padding: 0 20px; }
   .nav-links .nav-link { display: none; }
   footer { padding: 40px 20px 24px; }
   .footer-top { flex-direction: column; }
 }
 @media (max-width: 600px) {
-  h1 { letter-spacing: -1.2px; }
+  h1 { letter-spacing: -1.2px; font-size: 36px; }
   .preview-wrap { display: none; }
   .feature-num-col { display: none; }
-  .feature-body { padding: 24px 20px; }
+  .feature-row { grid-template-columns: 1fr; }
+  .feature-body { padding: 24px 20px; gap: 16px; }
+  .feature-body .feature-visual { display: none; }
+  .feature-row h3 { font-size: 20px; }
+  .feature-row p { font-size: 14px; }
+  .feature-tag { font-size: 10px; padding: 2px 8px; white-space: nowrap; }
+  .features-list { border-radius: var(--radius-lg); }
+  section { padding: 64px 16px; }
+  .section-inner { padding: 0; }
+  .hero { padding: 100px 20px 60px; }
+  .hero-trust { gap: 12px; font-size: 11.5px; }
+  .trust-divider { display: none; }
+  .hero-trust span { background: var(--surface); padding: 4px 10px; border-radius: 20px; }
+  .steps { padding: 0; }
+  .step { padding: 0; }
+  .pricing-grid { gap: 16px; }
+  .price-card { padding: 24px 20px; }
+  .price-num { font-size: 40px; }
+  h2 { font-size: 30px; letter-spacing: -1px; }
+  .section-desc { font-size: 15px; }
+  .cta-section { padding: 72px 20px; }
+  .cta-section h2 { font-size: 28px; }
+  .cta-section p { font-size: 15px; }
+  .btn-cta-primary, .btn-cta-secondary { padding: 12px 22px; font-size: 14px; width: 100%; justify-content: center; }
+  .cta-actions { flex-direction: column; }
+  .nav-cta { padding: 7px 14px; font-size: 13px; }
 }
 </style>
 </head>
@@ -714,7 +739,7 @@ footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.06); p
     </div>
     <p class="reveal" style="margin-top:18px;font-size:13px;color:var(--ink-3);max-width:740px;">
       Need a custom arrangement for a chamber of commerce, law firm, or larger organisation?
-      <a href="mailto:hello@orlex.ai" style="color:var(--accent);font-weight:500;">Contact us</a> and we'll tailor a plan that fits.
+      <a href="/cdn-cgi/l/email-protection#85ede0e9e9eac5eaf7e9e0fdabe4ec" style="color:var(--accent);font-weight:500;">Contact us</a> and we'll tailor a plan that fits.
     </p>
   </div>
 </section>
@@ -726,7 +751,7 @@ footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.06); p
     <p>Start tracking, acting, and complying — all in one place.</p>
     <div class="cta-actions">
       <a href="orlex-prototype.html" class="btn-cta-primary">Explore the platform →</a>
-      <a href="mailto:hello@orlex.ai" class="btn-cta-secondary">Request a demo</a>
+      <a href="/cdn-cgi/l/email-protection#deb6bbb2b2b19eb1acb2bba6f0bfb7" class="btn-cta-secondary">Request a demo</a>
     </div>
     <p class="cta-note">No credit card required · Cancel anytime</p>
   </div>
@@ -761,7 +786,7 @@ footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.06); p
           <a href="#">About</a>
           <a href="#">Blog</a>
           <a href="#">Careers</a>
-          <a href="mailto:hello@orlex.ai">Contact</a>
+          <a href="/cdn-cgi/l/email-protection#d4bcb1b8b8bb94bba6b8b1acfab5bd">Contact</a>
         </div>
         <div class="footer-col">
           <h4>Resources</h4>
@@ -782,7 +807,7 @@ footer { background: var(--ink); border-top: 1px solid rgba(255,255,255,0.06); p
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 20);
@@ -791,12 +816,4 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const t = document.querySelector(a.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
-  });
-});
-</script>
-</body>
-</html>
+document.querySelectorAll('a[href^="#"]').forEach(
