@@ -17,6 +17,7 @@ html:not([data-r=site]) #site, html:not([data-r=signup]) #signup, html:not([data
 html[data-r=site] body{overflow-x:hidden;background:#fff}
 html[data-r=signup] body{background:#fff}
 html[data-r=app] body{overflow:hidden;background:#f8f7f4}
+@media (max-width:900px){html[data-r=app] body{overflow:visible;overflow-x:clip}}
 #site section{scroll-margin-top:0}
 
 #site *, #site *::before, #site *::after { box-sizing: border-box; margin: 0; padding: 0; }
